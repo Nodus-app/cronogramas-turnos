@@ -1,22 +1,48 @@
 # Cronogramas de Turnos
 
-App web (HTML/CSS/JS puro, sin backend) para que un supervisor gestione los diagramas de turno de personal en petroleras (patrones **14x14**, **7x7**, **7x14** o personalizados), organizados en grupos, con panorama general y planificación de vacaciones/licencias con sugerencia automática de cobertura.
+App web (HTML/CSS/JS puro) para que un supervisor gestione los diagramas de turno de personal en petroleras (patrones **14x14**, **7x7**, **7x14** o personalizados), organizados en grupos, con panorama general, planificación de vacaciones/licencias con sugerencia automática de cobertura, y acceso individual para que cada empleado vea su propio diagrama y pida vacaciones desde su celular.
 
-## Uso
+Los datos viven en un **Google Sheet**, leídos y escritos a través de un **Google Apps Script** publicado como Web App. No hay ningún otro backend ni costo asociado.
 
-Abrí `index.html` en el navegador (localmente, o publicado con GitHub Pages). No requiere instalación ni build.
+## 1. Desplegar el backend (una sola vez)
 
-- **Login**: usuario `admin`, clave `crono2026` (ver/cambiar en `app.js`, constante `CONFIG.users`). Esto es solo un candado de acceso, no seguridad real: los datos y la clave viven en el propio archivo del cliente.
-- **Datos**: se guardan en el `localStorage` del navegador (por dispositivo/navegador, no se sincronizan solos entre PCs). Usá **Exportar / Importar** (arriba a la derecha) para respaldar o pasar los datos a otra máquina.
+1. Abrí el Google Sheet **"Cronogramas Turnos - Base de Datos"** (ya creado, con las pestañas `Usuarios`, `Grupos`, `Integrantes`, `Novedades`).
+2. **Extensiones → Apps Script**.
+3. Borrá el contenido por defecto y pegá todo el archivo `Code.gs` de este repo.
+4. **Implementar → Nueva implementación → Tipo: Aplicación web**.
+   - Ejecutar como: **Yo**
+   - Quién tiene acceso: **Cualquier usuario**
+5. Autorizá los permisos (es tu propio script leyendo tu propio Sheet).
+6. Copiá la URL que termina en `/exec`.
+7. En `app.js`, reemplazá la constante `API_URL` por esa URL, y subí el cambio al repo (o a GitHub Pages).
 
-## Funcionalidad
+Cada vez que edites `Code.gs` tenés que hacer **Implementar → Gestionar implementaciones → editar (lápiz) → Nueva versión → Implementar** para que los cambios tomen efecto (la URL no cambia).
 
-- **Grupos e Integrantes**: creá tantos grupos como quieras (por frente, cliente, zona, etc.), con nombre y color propios. Cada integrante tiene patrón de trabajo (14x14 / 7x7 / 7x14 / personalizado), turno (día fijo, noche fija o alterna día/noche por ciclo) y fecha de inicio de ciclo.
-- **Panorama General**: matriz con todos los integrantes (agrupados) día por día — código de color Día / Noche / Franco / Vacaciones / Licencia. Filtrable por grupo, con rango de fechas y cantidad de días configurable.
-- **Vacaciones y Cobertura**: elegís integrante + rango de fechas + tipo (vacaciones o licencia/médico); la app guarda la novedad y sugiere quién puede cubrirlo, priorizando compañeros del mismo grupo que estén de franco en esas fechas, ordenados por % de días cubiertos.
+## 2. Usuarios y roles
+
+Todo el control de acceso vive en la pestaña **Usuarios** del Sheet:
+
+| email | clave | rol | integranteId | nombre |
+|---|---|---|---|---|
+| admin@cronoturnos.local | crono2026 | supervisor | | Supervisor |
+
+- **Supervisores**: la única forma de crear un supervisor nuevo es agregando una fila a mano en esta pestaña con `rol = supervisor`. La app nunca deja que alguien se auto-asigne ese rol — solo quien tiene permiso de edición sobre el Sheet (vos, o a quien le compartas el Sheet) puede otorgarlo. Cambiá la clave del `admin` por defecto apenas lo despliegues.
+- **Empleados**: se crean automáticamente cuando un supervisor, al cargar o editar un integrante desde la app, tilda **"Habilitar acceso"** y le pone un email + clave. No hace falta tocar el Sheet a mano para esto.
+
+## 3. Publicar el frontend
+
+`index.html`, `style.css` y `app.js` son estáticos — podés abrirlos directo o publicarlos con GitHub Pages (**Settings → Pages → Source: Deploy from a branch → main / (root)**).
+
+## 4. Uso
+
+- **Supervisor**: ve Panorama General (matriz de todos los grupos), gestiona Grupos e Integrantes, carga vacaciones/licencias y aprueba o rechaza las que piden los empleados, con sugerencia de cobertura (compañeros de franco en esas fechas).
+- **Empleado**: ve solo su propio diagrama y puede pedir vacaciones/licencia, que quedan "pendiente" hasta que el supervisor las aprueba.
 
 ## Estructura
 
-- `index.html` — estructura y modales
-- `style.css` — estilos (tema oscuro)
-- `app.js` — lógica de patrones, estado (localStorage) y render
+```
+index.html   → estructura y modales
+style.css    → estilos (tema oscuro)
+app.js       → lógica de patrones, llamadas a la API y render (frontend)
+Code.gs      → backend: Apps Script sobre el Google Sheet
+```

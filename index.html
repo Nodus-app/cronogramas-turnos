@@ -14,10 +14,11 @@
     <div class="login-logo">🗓️</div>
     <h1>Cronogramas de Turnos</h1>
     <p class="login-sub">Gestión de diagramas, grupos y cobertura de personal</p>
-    <input id="lu" type="text" placeholder="Usuario" autocomplete="username">
+    <input id="lu" type="email" placeholder="Email" autocomplete="username">
     <input id="lp" type="password" placeholder="Contraseña" autocomplete="current-password">
-    <button onclick="doLogin()">Ingresar</button>
-    <div id="lerr" class="login-err" style="display:none">Usuario o contraseña incorrectos</div>
+    <button id="lbtn" onclick="doLogin()">Ingresar</button>
+    <div id="lerr" class="login-err" style="display:none"></div>
+    <p class="login-hint">Primer ingreso (supervisor): <code>admin@cronoturnos.local</code> / <code>crono2026</code></p>
   </div>
 </div>
 
@@ -27,21 +28,19 @@
       <span class="brand">🗓️ Cronogramas de Turnos</span>
     </div>
     <nav class="tabs">
-      <button class="tab on" onclick="goTab('panorama',this)">Panorama General</button>
-      <button class="tab" onclick="goTab('grupos',this)">Grupos e Integrantes</button>
-      <button class="tab" onclick="goTab('vacaciones',this)">Vacaciones y Cobertura</button>
+      <button class="tab on rol-supervisor" onclick="goTab('panorama',this)">Panorama General</button>
+      <button class="tab rol-supervisor" onclick="goTab('grupos',this)">Grupos e Integrantes</button>
+      <button class="tab rol-supervisor" onclick="goTab('vacaciones',this)">Vacaciones y Cobertura</button>
+      <button class="tab on rol-empleado" onclick="goTab('midiagrama',this)">Mi Diagrama</button>
     </nav>
     <div class="topbar-right">
       <span id="hdr-user" class="hdr-user"></span>
-      <button class="btn-ghost" onclick="exportData()">⬇ Exportar</button>
-      <button class="btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Importar</button>
-      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
       <button class="btn-ghost" onclick="doLogout()">Salir</button>
     </div>
   </header>
 
   <main>
-    <!-- PANORAMA GENERAL -->
+    <!-- PANORAMA GENERAL (supervisor) -->
     <section id="sec-panorama" class="sec on">
       <div class="card toolbar">
         <div class="field">
@@ -76,7 +75,7 @@
       </div>
     </section>
 
-    <!-- GRUPOS E INTEGRANTES -->
+    <!-- GRUPOS E INTEGRANTES (supervisor) -->
     <section id="sec-grupos" class="sec">
       <div class="grid-2">
         <div class="card">
@@ -93,18 +92,18 @@
           </div>
           <div id="integrantes-empty" class="empty">Seleccioná un grupo para ver o cargar sus integrantes.</div>
           <table id="integrantes-tbl" class="tbl" style="display:none">
-            <thead><tr><th>Nombre</th><th>Patrón</th><th>Turno</th><th>Inicio ciclo</th><th></th></tr></thead>
+            <thead><tr><th>Nombre</th><th>Patrón</th><th>Turno</th><th>Acceso</th><th></th></tr></thead>
             <tbody id="integrantes-tbody"></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- VACACIONES Y COBERTURA -->
+    <!-- VACACIONES Y COBERTURA (supervisor) -->
     <section id="sec-vacaciones" class="sec">
       <div class="grid-2">
         <div class="card">
-          <div class="card-h"><h2>Planificar vacaciones / novedad</h2></div>
+          <div class="card-h"><h2>Cargar vacaciones / novedad</h2></div>
           <div class="field">
             <label>Integrante</label>
             <select id="vac-persona"></select>
@@ -120,14 +119,56 @@
               <option value="L">Licencia / Médico</option>
             </select>
           </div>
-          <button class="btn" onclick="buscarCobertura()">Buscar cobertura</button>
+          <button class="btn" onclick="buscarCobertura()">Guardar y buscar cobertura</button>
           <div id="vac-resultado"></div>
         </div>
         <div class="card">
-          <div class="card-h"><h2>Novedades cargadas</h2></div>
+          <div class="card-h"><h2>Solicitudes pendientes</h2></div>
+          <div id="pendientes-wrap"><div class="empty">Sin solicitudes pendientes</div></div>
+          <div class="card-h" style="margin-top:18px"><h2>Novedades cargadas</h2></div>
           <table class="tbl">
-            <thead><tr><th>Integrante</th><th>Tipo</th><th>Desde</th><th>Hasta</th><th></th></tr></thead>
+            <thead><tr><th>Integrante</th><th>Tipo</th><th>Desde</th><th>Hasta</th><th>Estado</th><th></th></tr></thead>
             <tbody id="novedades-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MI DIAGRAMA (empleado) -->
+    <section id="sec-midiagrama" class="sec">
+      <div class="card">
+        <div class="card-h"><h2 id="mid-titulo">Mi diagrama</h2></div>
+        <div id="mid-wrap" class="matrix-wrap"></div>
+        <div class="legend" style="margin-top:12px">
+          <span class="lg"><i class="sw sw-D"></i> Día</span>
+          <span class="lg"><i class="sw sw-N"></i> Noche</span>
+          <span class="lg"><i class="sw sw-F"></i> Franco</span>
+          <span class="lg"><i class="sw sw-V"></i> Vacaciones</span>
+          <span class="lg"><i class="sw sw-L"></i> Licencia/Médico</span>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-h"><h2>Pedir vacaciones / licencia</h2></div>
+          <div class="field-row">
+            <div class="field"><label>Desde</label><input type="date" id="mid-desde"></div>
+            <div class="field"><label>Hasta</label><input type="date" id="mid-hasta"></div>
+          </div>
+          <div class="field">
+            <label>Tipo</label>
+            <select id="mid-tipo">
+              <option value="V">Vacaciones</option>
+              <option value="L">Licencia / Médico</option>
+            </select>
+          </div>
+          <button class="btn" onclick="pedirNovedad()">Enviar pedido</button>
+          <div id="mid-msg"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Mis novedades</h2></div>
+          <table class="tbl">
+            <thead><tr><th>Tipo</th><th>Desde</th><th>Hasta</th><th>Estado</th></tr></thead>
+            <tbody id="mid-novedades-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -180,14 +221,25 @@
       <label>Fecha de inicio de ciclo (primer día de trabajo conocido)</label>
       <input type="date" id="integrante-inicio">
     </div>
+    <div class="field acceso-box">
+      <label class="chk-label"><input type="checkbox" id="integrante-acceso" onchange="onAccesoChange()"> Habilitar para que este empleado pueda loguearse y ver su propio diagrama</label>
+      <div id="acceso-fields" style="display:none">
+        <div class="field"><label>Email de acceso</label><input type="email" id="integrante-acceso-email" placeholder="nombre@ejemplo.com"></div>
+        <div class="field">
+          <label>Clave de acceso</label>
+          <div class="field-row">
+            <input type="text" id="integrante-acceso-clave" placeholder="Se genera automáticamente" style="flex:1">
+            <button type="button" class="btn-ghost btn-sm" onclick="generarClave()">Generar</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeModal('modal-integrante')">Cancelar</button>
       <button class="btn" onclick="saveIntegrante()">Guardar</button>
     </div>
   </div>
 </div>
-
-<div id="daycell-tooltip" class="daycell-tooltip" style="display:none"></div>
 
 <script src="app.js"></script>
 </body>
