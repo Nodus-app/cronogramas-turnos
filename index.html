@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cronogramas de Turnos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%97%93%EF%B8%8F</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login-overlay" class="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">🗓️</div>
+    <h1>Cronogramas de Turnos</h1>
+    <p class="login-sub">Gestión de diagramas, grupos y cobertura de personal</p>
+    <input id="lu" type="text" placeholder="Usuario" autocomplete="username">
+    <input id="lp" type="password" placeholder="Contraseña" autocomplete="current-password">
+    <button onclick="doLogin()">Ingresar</button>
+    <div id="lerr" class="login-err" style="display:none">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="brand">🗓️ Cronogramas de Turnos</span>
+    </div>
+    <nav class="tabs">
+      <button class="tab on" onclick="goTab('panorama',this)">Panorama General</button>
+      <button class="tab" onclick="goTab('grupos',this)">Grupos e Integrantes</button>
+      <button class="tab" onclick="goTab('vacaciones',this)">Vacaciones y Cobertura</button>
+    </nav>
+    <div class="topbar-right">
+      <span id="hdr-user" class="hdr-user"></span>
+      <button class="btn-ghost" onclick="exportData()">⬇ Exportar</button>
+      <button class="btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Importar</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn-ghost" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- PANORAMA GENERAL -->
+    <section id="sec-panorama" class="sec on">
+      <div class="card toolbar">
+        <div class="field">
+          <label>Grupo</label>
+          <select id="pan-grupo" onchange="renderPanorama()"><option value="">Todos los grupos</option></select>
+        </div>
+        <div class="field">
+          <label>Desde</label>
+          <input type="date" id="pan-desde" onchange="renderPanorama()">
+        </div>
+        <div class="field">
+          <label>Días a mostrar</label>
+          <select id="pan-dias" onchange="renderPanorama()">
+            <option value="14">14 días</option>
+            <option value="21">21 días</option>
+            <option value="31" selected>31 días</option>
+            <option value="42">42 días</option>
+          </select>
+        </div>
+        <button class="btn" onclick="setPanHoy()">Hoy</button>
+        <div class="legend">
+          <span class="lg"><i class="sw sw-D"></i> Día</span>
+          <span class="lg"><i class="sw sw-N"></i> Noche</span>
+          <span class="lg"><i class="sw sw-F"></i> Franco</span>
+          <span class="lg"><i class="sw sw-V"></i> Vacaciones</span>
+          <span class="lg"><i class="sw sw-L"></i> Licencia/Médico</span>
+        </div>
+      </div>
+      <div class="card">
+        <div id="pan-empty" class="empty" style="display:none">Todavía no hay grupos ni integrantes cargados. Andá a la pestaña <strong>Grupos e Integrantes</strong> para crear el primero.</div>
+        <div id="pan-wrap" class="matrix-wrap"></div>
+      </div>
+    </section>
+
+    <!-- GRUPOS E INTEGRANTES -->
+    <section id="sec-grupos" class="sec">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-h">
+            <h2>Grupos</h2>
+            <button class="btn" onclick="openGrupoModal()">+ Nuevo grupo</button>
+          </div>
+          <div id="grupos-list" class="grupos-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-h">
+            <h2 id="integrantes-h">Integrantes</h2>
+            <button class="btn" id="btn-add-integrante" onclick="openIntegranteModal()" disabled>+ Nuevo integrante</button>
+          </div>
+          <div id="integrantes-empty" class="empty">Seleccioná un grupo para ver o cargar sus integrantes.</div>
+          <table id="integrantes-tbl" class="tbl" style="display:none">
+            <thead><tr><th>Nombre</th><th>Patrón</th><th>Turno</th><th>Inicio ciclo</th><th></th></tr></thead>
+            <tbody id="integrantes-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VACACIONES Y COBERTURA -->
+    <section id="sec-vacaciones" class="sec">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-h"><h2>Planificar vacaciones / novedad</h2></div>
+          <div class="field">
+            <label>Integrante</label>
+            <select id="vac-persona"></select>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Desde</label><input type="date" id="vac-desde"></div>
+            <div class="field"><label>Hasta</label><input type="date" id="vac-hasta"></div>
+          </div>
+          <div class="field">
+            <label>Tipo</label>
+            <select id="vac-tipo">
+              <option value="V">Vacaciones</option>
+              <option value="L">Licencia / Médico</option>
+            </select>
+          </div>
+          <button class="btn" onclick="buscarCobertura()">Buscar cobertura</button>
+          <div id="vac-resultado"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Novedades cargadas</h2></div>
+          <table class="tbl">
+            <thead><tr><th>Integrante</th><th>Tipo</th><th>Desde</th><th>Hasta</th><th></th></tr></thead>
+            <tbody id="novedades-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL GRUPO -->
+<div id="modal-grupo" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <h3 id="grupo-modal-title">Nuevo grupo</h3>
+    <input type="hidden" id="grupo-id">
+    <div class="field"><label>Nombre del grupo</label><input type="text" id="grupo-nombre" placeholder="Ej: SHELL, PLUPE BDC, Turno Norte..."></div>
+    <div class="field"><label>Color</label><input type="color" id="grupo-color" value="#2dd4bf"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-grupo')">Cancelar</button>
+      <button class="btn" onclick="saveGrupo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL INTEGRANTE -->
+<div id="modal-integrante" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <h3 id="integrante-modal-title">Nuevo integrante</h3>
+    <input type="hidden" id="integrante-id">
+    <div class="field"><label>Nombre y apellido</label><input type="text" id="integrante-nombre"></div>
+    <div class="field">
+      <label>Patrón de trabajo</label>
+      <select id="integrante-patron" onchange="onPatronChange()">
+        <option value="14x14">14x14 (14 días trabajo / 14 francos)</option>
+        <option value="7x7">7x7 (7 días trabajo / 7 francos)</option>
+        <option value="7x14">7x14 (7 días trabajo / 14 francos)</option>
+        <option value="custom">Personalizado...</option>
+      </select>
+    </div>
+    <div class="field-row" id="custom-dias-row" style="display:none">
+      <div class="field"><label>Días trabajo</label><input type="number" id="integrante-on" min="1" value="7"></div>
+      <div class="field"><label>Días franco</label><input type="number" id="integrante-off" min="1" value="7"></div>
+    </div>
+    <div class="field">
+      <label>Turno</label>
+      <select id="integrante-turno">
+        <option value="D">Siempre Día (D)</option>
+        <option value="N">Siempre Noche (N)</option>
+        <option value="ALT">Alterna Día/Noche cada ciclo</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Fecha de inicio de ciclo (primer día de trabajo conocido)</label>
+      <input type="date" id="integrante-inicio">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-integrante')">Cancelar</button>
+      <button class="btn" onclick="saveIntegrante()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="daycell-tooltip" class="daycell-tooltip" style="display:none"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
