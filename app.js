@@ -1,7 +1,7 @@
 // ── CONFIG ──────────────────────────────────────────────────────────────
 // Pegá acá la URL de tu implementación de Apps Script (termina en /exec).
 // Ver instrucciones en Code.gs / README.md.
-var API_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+var API_URL = 'https://script.google.com/macros/s/AKfycbxxVs1_eHaSUk1rbxryXb01BUuv5O2cJgW_LIKwMh3Cm2q_WeJ05Yc5t8f6kCT6VInb/exec';
 
 var SESSION_KEY = 'crono_session';
 var DOW = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
