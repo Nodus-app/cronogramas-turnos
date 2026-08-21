@@ -1,0 +1,16 @@
+{
+  "name": "Cronogramas de Turnos",
+  "short_name": "Cronogramas",
+  "description": "Gestión de diagramas de turno, grupos y cobertura de personal",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#12161B",
+  "theme_color": "#12161B",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

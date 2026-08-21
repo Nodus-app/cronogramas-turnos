@@ -35,12 +35,20 @@ Todo el control de acceso vive en la pestaña **Usuarios** del Sheet:
 
 ## 4. Uso
 
-- **Supervisor**: ve Panorama General (matriz de todos los grupos, de 14 a 365 días), gestiona Grupos e Integrantes, carga vacaciones/licencias y aprueba o rechaza las que piden los empleados, con sugerencia de cobertura (compañeros de franco en esas fechas).
+- **Supervisor**: ve Panorama General — matriz vertical (fechas en filas, integrantes en columnas, con scroll fluido) de 14 a 365 días, filtrable por grupo y por integrante — gestiona Grupos e Integrantes, carga vacaciones/licencias y aprueba o rechaza las que piden los empleados, con sugerencia de cobertura (compañeros de franco en esas fechas).
 - **Empleado**: ve solo su propio diagrama y puede pedir vacaciones/licencia, que quedan "pendiente" hasta que el supervisor las aprueba.
 
 ### Carga masiva de integrantes
 
 En **Grupos e Integrantes** hay un botón **"Descargar plantilla (CSV)"** con las columnas necesarias (Grupo, Nombre, Patrón, Turno, Fecha de inicio, y opcionalmente email/clave de acceso). Completala en Excel o Google Sheets, exportá como CSV y subila con **"Importar CSV"**: los grupos que no existan se crean solos, y cada fila se da de alta como integrante.
+
+### Instalar como app (Chrome / Safari)
+
+La app es una PWA instalable: en Chrome/Android aparece un banner "Instalá la app" (o Menú → Instalar app). En Safari/iPhone no hay banner automático — tocá **Compartir → Agregar a pantalla de inicio**. Una vez instalada abre a pantalla completa, sin barra del navegador, con ícono propio.
+
+### Cache de la app
+
+`index.html` carga `style.css` y `app.js` con un parámetro `?v=N`. Si cambiás esos archivos, subí también el número de versión en `index.html` (y en `service-worker.js`, `ASSETS`) para que los navegadores no sigan usando una copia vieja en caché.
 
 ## Estructura
 

@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root{
-  --bg:#12161B; --bg2:#242C36; --card:#1B2129; --border:#333E4A;
+  --bg:#0A0D11; --bg2:#242C36; --card:#1B2129; --border:#3A4653;
   --txt:#ECEEF0; --txt2:#8C97A6; --txt3:#5C6572;
   --accent:#3FA9A0; --accent2:#4FC0B6; --danger:#E1543F; --warn:#E8A33D; --ok:#3FA9A0;
   --d-color:#E8A33D; --n-color:#5C7FBF; --f-color:#1E3634; --v-color:#8B6FD1; --l-color:#E1543F;
@@ -16,7 +16,7 @@ input,select{font-family:inherit;background:var(--bg2);color:var(--txt);border:1
 input:focus,select:focus{outline:none;border-color:var(--accent2)}
 
 /* LOGIN */
-.login-overlay{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#0d2828,#050d0d);display:flex;align-items:center;justify-content:center;z-index:100}
+.login-overlay{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#1a2128,var(--bg));display:flex;align-items:center;justify-content:center;z-index:100}
 .login-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:36px 40px;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .login-logo{font-size:2.4rem;margin-bottom:6px}
 .login-box h1{font-size:1.15rem;color:var(--txt)}
@@ -87,7 +87,7 @@ main{padding:18px 20px;max-width:1500px;margin:0 auto}
 .tbl tr:hover td{background:var(--bg2)}
 
 /* MATRIX (panorama) */
-.matrix-wrap{overflow-x:auto}
+.matrix-wrap{overflow:auto;-webkit-overflow-scrolling:touch;max-height:75vh;border-radius:8px}
 table.matrix{border-collapse:collapse;font-size:.72rem;min-width:100%}
 table.matrix th,table.matrix td{border:1px solid var(--border);padding:0;text-align:center}
 table.matrix th.corner{position:sticky;left:0;background:var(--card);z-index:3;min-width:220px;text-align:left;padding:6px 10px}
@@ -107,6 +107,28 @@ table.matrix td.daycell.today{box-shadow:inset 0 0 0 2px var(--accent)}
 tr.group-sep td{background:var(--bg2);color:var(--accent2);font-weight:700;font-size:.75rem;padding:6px 10px;text-align:left}
 
 .daycell-tooltip{position:fixed;background:#08181a;border:1px solid var(--accent2);border-radius:6px;padding:6px 10px;font-size:.75rem;z-index:50;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+
+/* MATRIX VERTICAL (panorama — fechas en filas, integrantes en columnas) */
+table.matrix-v{border-collapse:collapse;font-size:.72rem}
+table.matrix-v th,table.matrix-v td{border:1px solid var(--border);padding:0;text-align:center}
+table.matrix-v thead th{position:sticky;top:0;background:var(--card);z-index:3;padding:6px 6px;font-family:var(--font-mono);font-weight:600;color:var(--txt2);white-space:normal;min-width:68px;max-width:110px;line-height:1.25}
+table.matrix-v thead th.corner{left:0;z-index:4;text-align:left;padding:6px 10px;min-width:100px}
+table.matrix-v th.namecol .sub{display:block;font-weight:400;color:var(--txt3);font-size:.6rem;white-space:normal}
+table.matrix-v td.datecell{position:sticky;left:0;background:var(--card);z-index:2;text-align:left;padding:4px 10px;white-space:nowrap;font-family:var(--font-mono);font-weight:600;color:var(--txt2);min-width:100px}
+table.matrix-v td.datecell .dow{color:var(--txt3);margin-right:6px;text-transform:uppercase;font-size:.68rem}
+table.matrix-v td.datecell.today{color:var(--accent)}
+table.matrix-v tr.month-sep td{background:var(--bg2);color:var(--accent2);font-weight:700;text-align:left;padding:6px 10px;font-size:.75rem;position:sticky;left:0}
+table.matrix-v td.daycell{height:26px;cursor:default}
+table.matrix-v td.daycell.today{box-shadow:inset 0 0 0 2px var(--accent)}
+
+/* INSTALAR APP */
+.install-banner{position:sticky;top:0;z-index:70;display:flex;align-items:center;gap:10px;background:var(--card);border-bottom:1px solid var(--accent);padding:10px 16px}
+.install-icon{font-size:1.3rem}
+.install-text{flex:1;min-width:0}
+.install-title{font-weight:700;font-size:.85rem}
+.install-sub{color:var(--txt3);font-size:.72rem}
+.ios-step{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--txt2);margin-bottom:12px}
+.ios-step-n{width:22px;height:22px;border-radius:50%;background:var(--bg2);color:var(--txt);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-family:var(--font-mono);flex-shrink:0}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:60}
@@ -136,3 +158,21 @@ tr.group-sep td{background:var(--bg2);color:var(--accent2);font-weight:700;font-
 .chk-label input{width:auto;margin-top:3px}
 .acceso-box{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px}
 #acceso-fields{margin-top:10px;display:flex;flex-direction:column;gap:10px}
+
+/* RESPONSIVE / MOBILE */
+@media(max-width:640px){
+  main{padding:12px}
+  .topbar{padding:10px 12px}
+  .brand{font-size:.95rem}
+  .card{padding:12px;border-radius:10px}
+  .toolbar{gap:10px}
+  .field{min-width:118px;flex:1 1 auto}
+  .legend{margin-left:0;width:100%;justify-content:flex-start;gap:10px 14px}
+  .modal{width:94vw;padding:18px;max-height:88vh;overflow-y:auto}
+  .matrix-wrap{max-height:65vh}
+  table.matrix-v thead th{min-width:54px;font-size:.66rem;padding:5px 4px}
+  table.matrix-v td.datecell,table.matrix-v thead th.corner{min-width:82px}
+  .install-banner{padding:8px 12px}
+  .install-title{font-size:.8rem}
+  .install-sub{display:none}
+}

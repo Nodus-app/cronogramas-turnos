@@ -89,6 +89,7 @@ function loadState(isInitial){
     }
     STATE = res;
     var s = getSession();
+    if(s.rol==='supervisor'){ refreshGrupoSelects(); refreshPanIntegranteSelect(); }
     if(isInitial){
       if(s.rol==='supervisor') goTab('panorama', document.querySelector('.tab.rol-supervisor'));
       else goTab('midiagrama', document.querySelector('.tab.rol-empleado'));
@@ -182,6 +183,7 @@ function renderGrupos(){
     }).join('');
   }
   refreshGrupoSelects();
+  refreshPanIntegranteSelect();
   renderIntegrantes();
 }
 function refreshGrupoSelects(){
@@ -512,6 +514,41 @@ function buildMatrixHtml(filas, fechas, novedades){
     '<tr><th class="corner">Integrante</th>'+dayHeaderCells+'</tr>'+
     '</thead><tbody>'+body+'</tbody></table>';
 }
+function buildMatrixHtmlVertical(cols, fechas, novedades){
+  var hoyIso = fmtISO(new Date());
+  var headerCells = cols.map(function(c){
+    return '<th class="namecol">'+escapeHtml(c.label)+'<span class="sub">'+patronLabel(c.integrante)+'</span></th>';
+  }).join('');
+  var body = ''; var prevKey = null;
+  fechas.forEach(function(d){
+    var iso = fmtISO(d);
+    var monthKey = d.getFullYear()+'-'+d.getMonth();
+    if(monthKey !== prevKey){
+      body += '<tr class="month-sep"><td colspan="'+(cols.length+1)+'">'+MESES[d.getMonth()]+' '+d.getFullYear()+'</td></tr>';
+      prevKey = monthKey;
+    }
+    var isToday = iso===hoyIso;
+    var cells = cols.map(function(c){
+      var s = statusFor(c.integrante, iso, novedades);
+      return '<td class="daycell daycell-'+s+(isToday?' today':'')+'" title="'+escapeHtml(c.integrante.nombre)+' — '+fmtFechaAR(iso)+': '+statusLabel(s)+'"></td>';
+    }).join('');
+    body += '<tr><td class="datecell'+(isToday?' today':'')+'"><span class="dow">'+DOW[d.getDay()]+'</span>'+d.getDate()+'</td>'+cells+'</tr>';
+  });
+  return '<table class="matrix-v"><thead><tr><th class="corner">Fecha</th>'+headerCells+'</tr></thead><tbody>'+body+'</tbody></table>';
+}
+function onPanGrupoChange(){
+  refreshPanIntegranteSelect();
+  renderPanorama();
+}
+function refreshPanIntegranteSelect(){
+  var grupoFiltro = document.getElementById('pan-grupo').value;
+  var sel = document.getElementById('pan-integrante');
+  var cur = sel.value;
+  var miembros = STATE.integrantes.filter(function(i){ return !grupoFiltro || i.grupoId===grupoFiltro; });
+  sel.innerHTML = '<option value="">Todos</option>'+
+    miembros.map(function(i){ return '<option value="'+i.id+'">'+escapeHtml(i.nombre)+'</option>'; }).join('');
+  if(miembros.find(function(i){return i.id===cur;})) sel.value = cur; else sel.value='';
+}
 function renderPanorama(){
   if(!STATE || !STATE.grupos) return;
   var wrap = document.getElementById('pan-wrap');
@@ -521,6 +558,7 @@ function renderPanorama(){
   }
   emptyBox.style.display='none';
   var grupoFiltro = document.getElementById('pan-grupo').value;
+  var integranteFiltro = document.getElementById('pan-integrante').value;
   var desdeStr = document.getElementById('pan-desde').value || fmtISO(new Date());
   var dias = parseInt(document.getElementById('pan-dias').value)||31;
   var desde = parseISO(desdeStr);
@@ -529,11 +567,13 @@ function renderPanorama(){
 
   var html = '';
   grupos.forEach(function(g){
-    var miembros = STATE.integrantes.filter(function(i){return i.grupoId===g.id;});
+    var miembros = STATE.integrantes.filter(function(i){
+      return i.grupoId===g.id && (!integranteFiltro || i.id===integranteFiltro);
+    });
     if(!miembros.length) return;
-    var filas = miembros.map(function(m){ return {integrante:m, label:m.nombre}; });
+    var cols = miembros.map(function(m){ return {integrante:m, label:m.nombre}; });
     html += '<div style="margin-top:14px;font-weight:700;color:var(--accent2)">'+escapeHtml(g.nombre)+'</div>';
-    html += buildMatrixHtml(filas, fechas, STATE.novedades);
+    html += buildMatrixHtmlVertical(cols, fechas, STATE.novedades);
   });
   wrap.innerHTML = html;
 }
@@ -695,7 +735,40 @@ function escapeHtml(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── INSTALAR COMO APP (PWA) ─────────────────────────────────────────────
+var deferredInstallPrompt = null;
+function isIos(){ return /iphone|ipad|ipod/i.test(window.navigator.userAgent); }
+function isStandalone(){ return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone===true; }
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallBanner();
+});
+function showInstallBanner(){
+  if(isStandalone() || localStorage.getItem('crono_install_dismissed')==='1') return;
+  if(!deferredInstallPrompt && !isIos()) return;
+  document.getElementById('install-banner').style.display='flex';
+}
+function dismissInstallBanner(){
+  localStorage.setItem('crono_install_dismissed','1');
+  document.getElementById('install-banner').style.display='none';
+}
+function handleInstallClick(){
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(function(){ deferredInstallPrompt=null; dismissInstallBanner(); });
+  } else if(isIos()){
+    document.getElementById('ios-install-modal').style.display='flex';
+  }
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('service-worker.js').catch(function(){}); });
+}
+
 // ── BOOT ────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', checkSession);
+document.addEventListener('DOMContentLoaded', function(){
+  checkSession();
+  if(isIos()) showInstallBanner();
+});
 var lpEl = document.getElementById('lp');
 if(lpEl) lpEl.addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
