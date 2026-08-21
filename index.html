@@ -58,6 +58,10 @@
             <option value="21">21 días</option>
             <option value="31" selected>31 días</option>
             <option value="42">42 días</option>
+            <option value="60">60 días</option>
+            <option value="90">90 días</option>
+            <option value="180">180 días</option>
+            <option value="365">365 días</option>
           </select>
         </div>
         <button class="btn" onclick="setPanHoy()">Hoy</button>
@@ -77,6 +81,16 @@
 
     <!-- GRUPOS E INTEGRANTES (supervisor) -->
     <section id="sec-grupos" class="sec">
+      <div class="card">
+        <div class="card-h"><h2>Carga masiva de integrantes</h2></div>
+        <p style="color:var(--txt3);font-size:.82rem;margin:0 0 12px">Descargá la plantilla, completala en Excel/Sheets (una fila por integrante, el grupo se crea solo si no existe) y subila. El email y la clave de acceso son opcionales.</p>
+        <div class="field-row" style="flex-wrap:wrap">
+          <button class="btn-ghost" onclick="descargarPlantilla()">⬇ Descargar plantilla (CSV)</button>
+          <button class="btn-ghost" onclick="document.getElementById('import-csv-file').click()">⬆ Importar CSV</button>
+          <input type="file" id="import-csv-file" accept=".csv" style="display:none" onchange="importarCSV(event)">
+        </div>
+        <div id="import-resultado"></div>
+      </div>
       <div class="grid-2">
         <div class="card">
           <div class="card-h">
@@ -182,7 +196,7 @@
     <h3 id="grupo-modal-title">Nuevo grupo</h3>
     <input type="hidden" id="grupo-id">
     <div class="field"><label>Nombre del grupo</label><input type="text" id="grupo-nombre" placeholder="Ej: SHELL, PLUPE BDC, Turno Norte..."></div>
-    <div class="field"><label>Color</label><input type="color" id="grupo-color" value="#2dd4bf"></div>
+    <div class="field"><label>Color</label><input type="color" id="grupo-color" value="#4FC0B6"></div>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeModal('modal-grupo')">Cancelar</button>
       <button class="btn" onclick="saveGrupo()">Guardar</button>

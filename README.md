@@ -35,8 +35,12 @@ Todo el control de acceso vive en la pestaña **Usuarios** del Sheet:
 
 ## 4. Uso
 
-- **Supervisor**: ve Panorama General (matriz de todos los grupos), gestiona Grupos e Integrantes, carga vacaciones/licencias y aprueba o rechaza las que piden los empleados, con sugerencia de cobertura (compañeros de franco en esas fechas).
+- **Supervisor**: ve Panorama General (matriz de todos los grupos, de 14 a 365 días), gestiona Grupos e Integrantes, carga vacaciones/licencias y aprueba o rechaza las que piden los empleados, con sugerencia de cobertura (compañeros de franco en esas fechas).
 - **Empleado**: ve solo su propio diagrama y puede pedir vacaciones/licencia, que quedan "pendiente" hasta que el supervisor las aprueba.
+
+### Carga masiva de integrantes
+
+En **Grupos e Integrantes** hay un botón **"Descargar plantilla (CSV)"** con las columnas necesarias (Grupo, Nombre, Patrón, Turno, Fecha de inicio, y opcionalmente email/clave de acceso). Completala en Excel o Google Sheets, exportá como CSV y subila con **"Importar CSV"**: los grupos que no existan se crean solos, y cada fila se da de alta como integrante.
 
 ## Estructura
 

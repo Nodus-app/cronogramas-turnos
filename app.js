@@ -203,7 +203,7 @@ function openGrupoModal(id){
   } else {
     document.getElementById('grupo-modal-title').textContent='Nuevo grupo';
     document.getElementById('grupo-nombre').value='';
-    document.getElementById('grupo-color').value='#2dd4bf';
+    document.getElementById('grupo-color').value='#4FC0B6';
   }
   document.getElementById('modal-grupo').style.display='flex';
 }
@@ -351,6 +351,135 @@ function deleteIntegrante(id){
 
 // ── MODALES GENÉRICO ────────────────────────────────────────────────────
 function closeModal(id){ document.getElementById(id).style.display='none'; }
+
+// ── CARGA MASIVA (CSV) ──────────────────────────────────────────────────
+var CSV_HEADERS = ['Grupo','Nombre y Apellido','Patron (14x14/7x7/7x14/NxM)','Turno (D/N/ALT)','Fecha inicio ciclo (AAAA-MM-DD)','Email acceso (opcional)','Clave acceso (opcional)'];
+function csvEscape(v){
+  v = String(v==null?'':v);
+  if(/[",\r\n]/.test(v)) return '"'+v.replace(/"/g,'""')+'"';
+  return v;
+}
+function descargarPlantilla(){
+  var ejemplo = ['SHELL','Juan Perez','14x14','D','2026-08-21','juan@empresa.com',''];
+  var rows = [CSV_HEADERS, ejemplo];
+  var csv = rows.map(function(r){ return r.map(csvEscape).join(','); }).join('\r\n');
+  var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'plantilla-integrantes.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function parseCSV(text){
+  var rows = []; var row = []; var field=''; var inQuotes=false;
+  for(var i=0;i<text.length;i++){
+    var c = text[i];
+    if(inQuotes){
+      if(c === '"'){ if(text[i+1] === '"'){ field+='"'; i++; } else { inQuotes=false; } }
+      else field += c;
+    } else {
+      if(c === '"') inQuotes = true;
+      else if(c === ','){ row.push(field); field=''; }
+      else if(c === '\n' || c === '\r'){
+        if(c === '\r' && text[i+1] === '\n') i++;
+        row.push(field); field=''; rows.push(row); row=[];
+      } else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(function(r){ return r.length>1 || (r[0]||'').trim()!==''; });
+}
+function parsePatronCSV(s){
+  s = String(s||'').trim().toLowerCase();
+  var std = {'14x14':[14,14],'7x7':[7,7],'7x14':[7,14]};
+  if(std[s]) return std[s];
+  var m = s.match(/^(\d+)\s*x\s*(\d+)$/);
+  if(m) return [parseInt(m[1]), parseInt(m[2])];
+  return null;
+}
+function parseTurnoCSV(s){
+  s = String(s||'').trim().toUpperCase();
+  return (s==='D'||s==='N'||s==='ALT') ? s : 'D';
+}
+function normalizeFechaCSV(s){
+  s = String(s||'').trim();
+  if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)){
+    var p = s.split('-'); return p[0]+'-'+p[1].padStart(2,'0')+'-'+p[2].padStart(2,'0');
+  }
+  var m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m) return m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0');
+  return null;
+}
+var PALETA_GRUPOS = ['#4FC0B6','#E8A33D','#5C7FBF','#8B6FD1','#E1543F','#7FBF6F','#D18FD1','#6FA8BF'];
+function importarCSV(ev){
+  var file = ev.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    procesarImportCSV(reader.result);
+  };
+  reader.readAsText(file);
+}
+function procesarImportCSV(text){
+  var resBox = document.getElementById('import-resultado');
+  var rows = parseCSV(text);
+  if(rows.length < 2){
+    resBox.innerHTML = '<div class="empty">El archivo no tiene filas para importar.</div>';
+    document.getElementById('import-csv-file').value='';
+    return;
+  }
+  var dataRows = rows.slice(1);
+  var grupoCache = {};
+  STATE.grupos.forEach(function(g){ grupoCache[g.nombre.trim().toLowerCase()] = g.id; });
+  var creados=0, gruposCreados=0, errores=[], idx=0;
+
+  function siguiente(){
+    if(idx >= dataRows.length){ return terminar(); }
+    var r = dataRows[idx]; var fila = idx+2; idx++;
+    var grupoNombre = (r[0]||'').trim();
+    var nombre = (r[1]||'').trim();
+    if(!grupoNombre && !nombre) return siguiente();
+    if(!grupoNombre || !nombre){ errores.push('Fila '+fila+': falta grupo o nombre'); return siguiente(); }
+    resBox.innerHTML = '<div class="empty">Importando fila '+fila+' de '+(dataRows.length+1)+'...</div>';
+
+    var patron = parsePatronCSV(r[2]);
+    if(!patron){ errores.push('Fila '+fila+': patrón inválido ("'+(r[2]||'')+'")'); return siguiente(); }
+    var turno = parseTurnoCSV(r[3]);
+    var inicio = normalizeFechaCSV(r[4]);
+    if(!inicio){ errores.push('Fila '+fila+': fecha inválida ("'+(r[4]||'')+'"), usá AAAA-MM-DD'); return siguiente(); }
+    var accesoEmail = (r[5]||'').trim();
+    var accesoClave = (r[6]||'').trim();
+
+    function conGrupo(grupoId){
+      var integrante = {grupoId:grupoId, nombre:nombre, on:patron[0], off:patron[1], turno:turno, inicio:inicio};
+      var acceso = accesoEmail ? {habilitar:true, email:accesoEmail, clave:accesoClave||undefined} : undefined;
+      api('saveIntegrante',{integrante:integrante, acceso:acceso}).then(function(iRes){
+        if(!iRes.ok) errores.push('Fila '+fila+': '+(iRes.error||'no se pudo guardar'));
+        else creados++;
+        siguiente();
+      });
+    }
+
+    var grupoId = grupoCache[grupoNombre.toLowerCase()];
+    if(grupoId){ conGrupo(grupoId); }
+    else {
+      var color = PALETA_GRUPOS[gruposCreados % PALETA_GRUPOS.length];
+      api('saveGrupo',{grupo:{nombre:grupoNombre, color:color}}).then(function(gRes){
+        if(!gRes.ok){ errores.push('Fila '+fila+': no se pudo crear el grupo "'+grupoNombre+'"'); return siguiente(); }
+        grupoCache[grupoNombre.toLowerCase()] = gRes.id; gruposCreados++;
+        conGrupo(gRes.id);
+      });
+    }
+  }
+  function terminar(){
+    document.getElementById('import-csv-file').value='';
+    loadState();
+    resBox.innerHTML = '<div class="empty">Importados '+creados+' integrante'+(creados===1?'':'s')+
+      (gruposCreados?' ('+gruposCreados+' grupo'+(gruposCreados===1?'':'s')+' nuevo'+(gruposCreados===1?'':'s')+')':'')+'.'+
+      (errores.length? '<br><br><strong>Errores:</strong><br>'+errores.map(escapeHtml).join('<br>') : '')+'</div>';
+  }
+  siguiente();
+}
 
 // ── PANORAMA GENERAL (supervisor) ──────────────────────────────────────
 function setPanHoy(){

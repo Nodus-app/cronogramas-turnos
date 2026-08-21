@@ -1,12 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 :root{
-  --bg:#0a1515; --bg2:#0d2020; --card:#0f2424; --border:#1a3333;
-  --txt:#e0f2f1; --txt2:#8fb5b0; --txt3:#546e6e;
-  --accent:#00e5cc; --accent2:#2dd4bf; --danger:#ff5252; --warn:#ffab40; --ok:#69f0ae;
-  --d-color:#4d9fff; --n-color:#8b5cf6; --f-color:#2a4a4a; --v-color:#ff9f43; --l-color:#ff5252;
+  --bg:#12161B; --bg2:#242C36; --card:#1B2129; --border:#333E4A;
+  --txt:#ECEEF0; --txt2:#8C97A6; --txt3:#5C6572;
+  --accent:#3FA9A0; --accent2:#4FC0B6; --danger:#E1543F; --warn:#E8A33D; --ok:#3FA9A0;
+  --d-color:#E8A33D; --n-color:#5C7FBF; --f-color:#1E3634; --v-color:#8B6FD1; --l-color:#E1543F;
+  --font-display:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:'Segoe UI',Roboto,Arial,sans-serif;font-size:14px}
-h1,h2,h3{margin:0 0 6px 0}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:'Inter',ui-sans-serif,system-ui,Arial,sans-serif;font-size:14px}
+h1,h2,h3{margin:0 0 6px 0;font-family:var(--font-display)}
 button{font-family:inherit;cursor:pointer}
 input,select{font-family:inherit;background:var(--bg2);color:var(--txt);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:.9rem}
 input:focus,select:focus{outline:none;border-color:var(--accent2)}
@@ -26,7 +30,7 @@ input:focus,select:focus{outline:none;border-color:var(--accent2)}
 
 /* LAYOUT */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--card);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
-.brand{font-weight:800;font-size:1.05rem}
+.brand{font-family:var(--font-display);font-weight:700;font-size:1.05rem}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{background:transparent;border:1px solid transparent;color:var(--txt2);padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:600}
 .tab:hover{color:var(--txt)}
@@ -89,7 +93,7 @@ table.matrix th,table.matrix td{border:1px solid var(--border);padding:0;text-al
 table.matrix th.corner{position:sticky;left:0;background:var(--card);z-index:3;min-width:220px;text-align:left;padding:6px 10px}
 table.matrix td.namecell{position:sticky;left:0;background:var(--card);z-index:2;text-align:left;padding:6px 10px;font-weight:600;white-space:nowrap;min-width:220px}
 table.matrix td.namecell .sub{display:block;font-weight:400;color:var(--txt3);font-size:.68rem}
-table.matrix th.daycol{min-width:26px;padding:4px 2px;color:var(--txt3);font-weight:600}
+table.matrix th.daycol{min-width:26px;padding:4px 2px;color:var(--txt3);font-weight:600;font-family:var(--font-mono)}
 table.matrix th.daycol .dow{display:block;font-size:.6rem;color:var(--txt3);text-transform:uppercase}
 table.matrix th.daycol.today{color:var(--accent)}
 table.matrix th.month-row{background:var(--bg2);color:var(--txt2);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0}
@@ -117,7 +121,7 @@ tr.group-sep td{background:var(--bg2);color:var(--accent2);font-weight:700;font-
 .cov-card.partial{border-color:var(--warn)}
 .cov-name{font-weight:700}
 .cov-meta{color:var(--txt3);font-size:.75rem}
-.cov-pct{font-weight:800;font-size:1.05rem}
+.cov-pct{font-weight:700;font-size:1.05rem;font-family:var(--font-mono)}
 .cov-pct.full{color:var(--ok)}
 .cov-pct.partial{color:var(--warn)}
 
