@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <script>(function(){try{var t=localStorage.getItem('crono-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head>
 <body>
@@ -93,8 +93,8 @@
         </div>
         <div class="field">
           <label>Integrante</label>
-          <select id="pan-integrante" multiple size="5" onchange="renderPanorama()"></select>
-          <span class="field-hint">Shift+clic: rango · Ctrl/Cmd+clic: varios sueltos</span>
+          <select id="pan-integrante" multiple size="1" onfocus="panIntegranteExpand()" onblur="panIntegranteCollapse()" onchange="renderPanorama()"></select>
+          <span class="field-hint">Clic para elegir. Shift+clic: rango · Ctrl/Cmd+clic: varios sueltos</span>
         </div>
         <div class="field" id="pan-desde-field">
           <label>Desde</label>
@@ -318,6 +318,6 @@
   </div>
 </div>
 
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

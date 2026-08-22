@@ -545,8 +545,19 @@ function refreshPanIntegranteSelect(){
   var sel = document.getElementById('pan-integrante');
   var curSeleccionados = Array.prototype.map.call(sel.selectedOptions, function(o){ return o.value; });
   var miembros = STATE.integrantes.filter(function(i){ return !grupoFiltro || i.grupoId===grupoFiltro; });
-  sel.innerHTML = miembros.map(function(i){ return '<option value="'+i.id+'">'+escapeHtml(i.nombre)+'</option>'; }).join('');
+  sel.innerHTML = '<option value="" disabled>Todos (clic para elegir)</option>'+
+    miembros.map(function(i){ return '<option value="'+i.id+'">'+escapeHtml(i.nombre)+'</option>'; }).join('');
   Array.prototype.forEach.call(sel.options, function(o){ o.selected = curSeleccionados.indexOf(o.value)!==-1; });
+}
+function panIntegranteExpand(){
+  var sel = document.getElementById('pan-integrante');
+  sel.size = Math.min(Math.max(sel.options.length, 3), 6);
+}
+function panIntegranteCollapse(){
+  var sel = document.getElementById('pan-integrante');
+  sel.size = 1;
+  if(sel.selectedOptions.length) sel.selectedOptions[0].scrollIntoView({block:'nearest'});
+  else sel.scrollTop = 0;
 }
 // ── PANORAMA: calendario cuando queda un solo integrante seleccionado ──
 var panCalCursor = null;
