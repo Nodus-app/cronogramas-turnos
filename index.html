@@ -12,7 +12,8 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
+<script>(function(){try{var t=localStorage.getItem('crono-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head>
 <body>
 
@@ -48,6 +49,14 @@
     <button id="lbtn" onclick="doLogin()">Ingresar</button>
     <div id="lerr" class="login-err" style="display:none"></div>
     <p class="login-hint">Primer ingreso (supervisor): <code>admin@cronoturnos.local</code> / <code>crono2026</code></p>
+    <div class="login-theme-row">
+      <select id="theme-picker-login" onchange="setTheme(this.value)" title="Combinación de colores">
+        <option value="hueso">🦴 Hueso Dorado</option>
+        <option value="pizarra">🌊 Pizarra Azul</option>
+        <option value="bosque">🌿 Bosque</option>
+        <option value="medianoche">🌙 Medianoche</option>
+      </select>
+    </div>
   </div>
 </div>
 
@@ -63,6 +72,12 @@
       <button class="tab on rol-empleado" onclick="goTab('midiagrama',this)">Mi Diagrama</button>
     </nav>
     <div class="topbar-right">
+      <select id="theme-picker" class="theme-picker" onchange="setTheme(this.value)" title="Combinación de colores">
+        <option value="hueso">🦴 Hueso Dorado</option>
+        <option value="pizarra">🌊 Pizarra Azul</option>
+        <option value="bosque">🌿 Bosque</option>
+        <option value="medianoche">🌙 Medianoche</option>
+      </select>
       <span id="hdr-user" class="hdr-user"></span>
       <button class="btn-ghost" onclick="doLogout()">Salir</button>
     </div>
@@ -288,6 +303,6 @@
   </div>
 </div>
 
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

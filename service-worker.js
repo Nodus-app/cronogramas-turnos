@@ -1,5 +1,5 @@
-var CACHE = 'crono-turnos-v3';
-var ASSETS = ['./index.html','./style.css?v=3','./app.js?v=3','./manifest.json'];
+var CACHE = 'crono-turnos-v4';
+var ASSETS = ['./index.html','./style.css?v=4','./app.js?v=4','./manifest.json'];
 
 self.addEventListener('install', function(e){
   self.skipWaiting();

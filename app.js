@@ -765,8 +765,28 @@ if('serviceWorker' in navigator){
   window.addEventListener('load', function(){ navigator.serviceWorker.register('service-worker.js').catch(function(){}); });
 }
 
+// ── TEMAS ───────────────────────────────────────────────────────────────
+var TEMAS = ['hueso','pizarra','bosque','medianoche'];
+function setTheme(t){
+  if(TEMAS.indexOf(t)===-1) t='hueso';
+  document.documentElement.setAttribute('data-theme', t);
+  try{ localStorage.setItem('crono-theme', t); }catch(e){}
+  ['theme-picker','theme-picker-login'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = t;
+  });
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
+}
+function initTheme(){
+  var saved = 'hueso';
+  try{ saved = localStorage.getItem('crono-theme') || 'hueso'; }catch(e){}
+  setTheme(saved);
+}
+
 // ── BOOT ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
+  initTheme();
   checkSession();
   if(isIos()) showInstallBanner();
 });
