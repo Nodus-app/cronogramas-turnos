@@ -205,7 +205,7 @@ function openGrupoModal(id){
   } else {
     document.getElementById('grupo-modal-title').textContent='Nuevo grupo';
     document.getElementById('grupo-nombre').value='';
-    document.getElementById('grupo-color').value='#4FC0B6';
+    document.getElementById('grupo-color').value='#F5DFA8';
   }
   document.getElementById('modal-grupo').style.display='flex';
 }
@@ -412,7 +412,7 @@ function normalizeFechaCSV(s){
   if(m) return m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0');
   return null;
 }
-var PALETA_GRUPOS = ['#4FC0B6','#E8A33D','#5C7FBF','#8B6FD1','#E1543F','#7FBF6F','#D18FD1','#6FA8BF'];
+var PALETA_GRUPOS = ['#F5DFA8','#E8A33D','#5C7FBF','#8B6FD1','#E1543F','#7BC496','#D18FD1','#6FA8BF'];
 function importarCSV(ev){
   var file = ev.target.files[0];
   if(!file) return;

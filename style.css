@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root{
-  --bg:#0A0D11; --bg2:#242C36; --card:#1B2129; --border:#3A4653;
-  --txt:#ECEEF0; --txt2:#8C97A6; --txt3:#5C6572;
-  --accent:#3FA9A0; --accent2:#4FC0B6; --danger:#E1543F; --warn:#E8A33D; --ok:#3FA9A0;
-  --d-color:#E8A33D; --n-color:#5C7FBF; --f-color:#1E3634; --v-color:#8B6FD1; --l-color:#E1543F;
+  --bg:#F3EEE2; --bg2:#E8DFC7; --card:#FFFFFF; --border:#DDD2B4;
+  --txt:#2A2418; --txt2:#6B6252; --txt3:#948A76;
+  --accent:#D9A62B; --accent2:#E8B94A; --accent-ink:#FFFFFF; --danger:#E23B3B; --warn:#F59E0B; --ok:#22B573;
+  --d-color:#FF9F1C; --n-color:#3B7DE8; --f-color:#2FBF71; --v-color:#9B5DE5; --l-color:#EF4444;
   --font-display:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
   --font-mono:'JetBrains Mono',ui-monospace,monospace;
 }
@@ -16,13 +16,13 @@ input,select{font-family:inherit;background:var(--bg2);color:var(--txt);border:1
 input:focus,select:focus{outline:none;border-color:var(--accent2)}
 
 /* LOGIN */
-.login-overlay{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#1a2128,var(--bg));display:flex;align-items:center;justify-content:center;z-index:100}
+.login-overlay{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#F2D48A,var(--bg));display:flex;align-items:center;justify-content:center;z-index:100}
 .login-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:36px 40px;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .login-logo{font-size:2.4rem;margin-bottom:6px}
 .login-box h1{font-size:1.15rem;color:var(--txt)}
 .login-sub{color:var(--txt3);font-size:.8rem;margin:0 0 20px}
 .login-box input{width:100%;margin-bottom:10px}
-.login-box button{width:100%;background:var(--accent2);color:#00201c;border:none;border-radius:6px;padding:10px;font-weight:700;margin-top:4px}
+.login-box button{width:100%;background:var(--accent2);color:var(--accent-ink);border:none;border-radius:6px;padding:10px;font-weight:700;margin-top:4px}
 .login-box button:hover{background:var(--accent)}
 .login-err{color:var(--danger);font-size:.8rem;margin-top:10px}
 .login-hint{color:var(--txt3);font-size:.72rem;margin:16px 0 0;line-height:1.5}
@@ -38,13 +38,13 @@ input:focus,select:focus{outline:none;border-color:var(--accent2)}
 .topbar-right{display:flex;align-items:center;gap:8px}
 .hdr-user{color:var(--txt3);font-size:.8rem;margin-right:6px}
 .btn,.btn-ghost{border-radius:6px;padding:8px 14px;font-size:.82rem;font-weight:600;border:1px solid var(--border)}
-.btn{background:var(--accent2);color:#00201c;border-color:var(--accent2)}
+.btn{background:var(--accent2);color:var(--accent-ink);border-color:var(--accent2)}
 .btn:hover{background:var(--accent)}
 .btn-ghost{background:transparent;color:var(--txt2)}
 .btn-ghost:hover{color:var(--txt);border-color:var(--accent2)}
 .btn-sm{padding:4px 10px;font-size:.75rem}
-.btn-danger{background:transparent;color:var(--danger);border-color:#4a2020}
-.btn-danger:hover{background:#2a1010}
+.btn-danger{background:transparent;color:var(--danger);border-color:var(--danger)}
+.btn-danger:hover{background:#FBE0E0}
 
 main{padding:18px 20px;max-width:1500px;margin:0 auto}
 .sec{display:none}
@@ -71,7 +71,7 @@ main{padding:18px 20px;max-width:1500px;margin:0 auto}
 .grupos-list{display:flex;flex-direction:column;gap:6px}
 .grupo-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);cursor:pointer;background:var(--bg2)}
 .grupo-item:hover{border-color:var(--accent2)}
-.grupo-item.on{border-color:var(--accent);background:#0f2c2a}
+.grupo-item.on{border-color:var(--accent);background:var(--accent2)}
 .grupo-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
 .grupo-name{flex:1;font-weight:600}
 .grupo-count{color:var(--txt3);font-size:.75rem}
@@ -99,14 +99,14 @@ table.matrix th.daycol.today{color:var(--accent)}
 table.matrix th.month-row{background:var(--bg2);color:var(--txt2);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0}
 table.matrix td.daycell{height:30px;cursor:default;position:relative}
 table.matrix td.daycell.today{box-shadow:inset 0 0 0 2px var(--accent)}
-.daycell-D{background:var(--d-color);color:#001428}
-.daycell-N{background:var(--n-color);color:#f5f0ff}
-.daycell-F{background:var(--f-color);color:#7fa5a0}
-.daycell-V{background:var(--v-color);color:#2b1500}
-.daycell-L{background:var(--l-color);color:#2b0000}
+.daycell-D{background:var(--d-color);color:#001428;font-weight:700}
+.daycell-N{background:var(--n-color);color:#f5f0ff;font-weight:700}
+.daycell-F{background:var(--f-color);color:#0B3D24;font-weight:700}
+.daycell-V{background:var(--v-color);color:#FFFFFF;font-weight:700}
+.daycell-L{background:var(--l-color);color:#FFFFFF;font-weight:700}
 tr.group-sep td{background:var(--bg2);color:var(--accent2);font-weight:700;font-size:.75rem;padding:6px 10px;text-align:left}
 
-.daycell-tooltip{position:fixed;background:#08181a;border:1px solid var(--accent2);border-radius:6px;padding:6px 10px;font-size:.75rem;z-index:50;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.daycell-tooltip{position:fixed;background:var(--card);color:var(--txt);border:1px solid var(--accent2);border-radius:6px;padding:6px 10px;font-size:.75rem;z-index:50;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 
 /* MATRIX VERTICAL (panorama — fechas en filas, integrantes en columnas) */
 table.matrix-v{border-collapse:collapse;font-size:.72rem}
@@ -149,9 +149,9 @@ table.matrix-v td.daycell.today{box-shadow:inset 0 0 0 2px var(--accent)}
 
 /* BADGES */
 .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;background:var(--bg2);color:var(--txt3);border:1px solid var(--border)}
-.badge-ok{background:#0d3327;color:var(--ok);border-color:#1a5c40}
-.badge-warn{background:#3a2a0d;color:var(--warn);border-color:#5c4419}
-.badge-bad{background:#3a1414;color:var(--danger);border-color:#5c1f1f}
+.badge-ok{background:#DFF5E8;color:#0F7A45;border-color:#8FDDB0}
+.badge-warn{background:#FDEBD0;color:#B8720A;border-color:#F0C270}
+.badge-bad{background:#FBE0E0;color:#C81E1E;border-color:#F0A0A0}
 
 /* ACCESO EMPLEADO */
 .chk-label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:.82rem;color:var(--txt2);text-transform:none;letter-spacing:0}
