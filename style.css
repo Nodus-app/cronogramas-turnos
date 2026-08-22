@@ -140,6 +140,7 @@ tr.group-sep td{background:var(--bg2);color:var(--accent2);font-weight:700;font-
 .daycell-tooltip{position:fixed;background:var(--card);color:var(--txt);border:1px solid var(--accent2);border-radius:6px;padding:6px 10px;font-size:.75rem;z-index:50;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 
 /* MI DIAGRAMA — CALENDARIO MENSUAL */
+.cal-wrap{max-width:420px;margin:0 auto}
 .cal-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
 .cal-nav{display:flex;align-items:center;gap:8px}
 .cal-nav-btn{background:var(--bg2);border:1px solid var(--border);color:var(--txt);border-radius:8px;width:34px;height:34px;font-size:1.1rem;line-height:1;display:flex;align-items:center;justify-content:center}
