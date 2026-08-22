@@ -543,11 +543,27 @@ function onPanGrupoChange(){
 function refreshPanIntegranteSelect(){
   var grupoFiltro = document.getElementById('pan-grupo').value;
   var sel = document.getElementById('pan-integrante');
-  var cur = sel.value;
+  var curSeleccionados = Array.prototype.map.call(sel.selectedOptions, function(o){ return o.value; });
   var miembros = STATE.integrantes.filter(function(i){ return !grupoFiltro || i.grupoId===grupoFiltro; });
-  sel.innerHTML = '<option value="">Todos</option>'+
-    miembros.map(function(i){ return '<option value="'+i.id+'">'+escapeHtml(i.nombre)+'</option>'; }).join('');
-  if(miembros.find(function(i){return i.id===cur;})) sel.value = cur; else sel.value='';
+  sel.innerHTML = miembros.map(function(i){ return '<option value="'+i.id+'">'+escapeHtml(i.nombre)+'</option>'; }).join('');
+  Array.prototype.forEach.call(sel.options, function(o){ o.selected = curSeleccionados.indexOf(o.value)!==-1; });
+}
+// ── PANORAMA: calendario cuando queda un solo integrante seleccionado ──
+var panCalCursor = null;
+function panCalPrevMonth(){
+  if(!panCalCursor) return;
+  panCalCursor = new Date(panCalCursor.getFullYear(), panCalCursor.getMonth()-1, 1);
+  renderPanorama();
+}
+function panCalNextMonth(){
+  if(!panCalCursor) return;
+  panCalCursor = new Date(panCalCursor.getFullYear(), panCalCursor.getMonth()+1, 1);
+  renderPanorama();
+}
+function panCalHoy(){
+  var hoy = new Date();
+  panCalCursor = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  renderPanorama();
 }
 function renderPanorama(){
   if(!STATE || !STATE.grupos) return;
@@ -558,7 +574,36 @@ function renderPanorama(){
   }
   emptyBox.style.display='none';
   var grupoFiltro = document.getElementById('pan-grupo').value;
-  var integranteFiltro = document.getElementById('pan-integrante').value;
+  var integrantesFiltro = Array.prototype.map.call(document.getElementById('pan-integrante').selectedOptions, function(o){ return o.value; });
+  var desdeField = document.getElementById('pan-desde-field');
+  var diasField = document.getElementById('pan-dias-field');
+  var hoyBtn = document.getElementById('pan-hoy-btn');
+
+  if(integrantesFiltro.length === 1){
+    var integrante = STATE.integrantes.find(function(i){ return i.id===integrantesFiltro[0]; });
+    if(!integrante){ wrap.innerHTML=''; return; }
+    desdeField.style.display='none'; diasField.style.display='none'; hoyBtn.style.display='none';
+    var hoy = new Date();
+    if(!panCalCursor) panCalCursor = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    var year = panCalCursor.getFullYear(), month = panCalCursor.getMonth();
+    wrap.innerHTML =
+      '<div class="cal-wrap">'+
+        '<div class="cal-header">'+
+          '<button class="cal-nav-btn" onclick="panCalPrevMonth()" aria-label="Mes anterior">‹</button>'+
+          '<div class="cal-title">'+escapeHtml(integrante.nombre)+' — '+MESES[month]+' '+year+'</div>'+
+          '<div class="cal-nav">'+
+            '<button class="btn-ghost btn-sm" onclick="panCalHoy()">Hoy</button>'+
+            '<button class="cal-nav-btn" onclick="panCalNextMonth()" aria-label="Mes siguiente">›</button>'+
+          '</div>'+
+        '</div>'+
+        CAL_DOW_ROW_HTML+
+        '<div class="cal-grid">'+buildCalendarCellsHtml(integrante, STATE.novedades, year, month)+'</div>'+
+        CAL_LEGEND_HTML+
+      '</div>';
+    return;
+  }
+
+  desdeField.style.display=''; diasField.style.display=''; hoyBtn.style.display='';
   var desdeStr = document.getElementById('pan-desde').value || fmtISO(new Date());
   var dias = parseInt(document.getElementById('pan-dias').value)||31;
   var desde = parseISO(desdeStr);
@@ -568,7 +613,7 @@ function renderPanorama(){
   var html = '';
   grupos.forEach(function(g){
     var miembros = STATE.integrantes.filter(function(i){
-      return i.grupoId===g.id && (!integranteFiltro || i.id===integranteFiltro);
+      return i.grupoId===g.id && (!integrantesFiltro.length || integrantesFiltro.indexOf(i.id)!==-1);
     });
     if(!miembros.length) return;
     var cols = miembros.map(function(m){ return {integrante:m, label:m.nombre}; });
@@ -693,6 +738,34 @@ function mostrarCobertura(persona, desde, hasta){
     }).join('');
 }
 
+// ── CALENDARIO MENSUAL (compartido: Mi Diagrama y Panorama de 1 integrante) ──
+function buildCalendarCellsHtml(integrante, novedades, year, month){
+  var hoy = new Date();
+  var firstOfMonth = new Date(year, month, 1);
+  var leading = firstOfMonth.getDay();
+  var daysInMonth = new Date(year, month+1, 0).getDate();
+  var cells = [];
+  for(var i=0;i<leading;i++) cells.push(null);
+  for(var d=1; d<=daysInMonth; d++) cells.push(new Date(year, month, d));
+  while(cells.length % 7 !== 0) cells.push(null);
+  return cells.map(function(date){
+    if(!date) return '<div class="cal-cell cal-empty"></div>';
+    var iso = fmtISO(date);
+    var status = statusFor(integrante, iso, novedades);
+    var isToday = sameDay(date, hoy);
+    return '<div class="cal-cell daycell-'+status+(isToday?' today':'')+'" title="'+escapeHtml(statusLabel(status))+'">'+date.getDate()+'</div>';
+  }).join('');
+}
+var CAL_DOW_ROW_HTML = '<div class="cal-dow-row">'+
+  '<div class="cal-dow">Dom</div><div class="cal-dow">Lun</div><div class="cal-dow">Mar</div>'+
+  '<div class="cal-dow">Mié</div><div class="cal-dow">Jue</div><div class="cal-dow">Vie</div><div class="cal-dow">Sáb</div></div>';
+var CAL_LEGEND_HTML = '<div class="legend" style="margin-top:14px">'+
+  '<span class="lg"><i class="sw sw-D"></i> Día</span>'+
+  '<span class="lg"><i class="sw sw-N"></i> Noche</span>'+
+  '<span class="lg"><i class="sw sw-F"></i> Franco</span>'+
+  '<span class="lg"><i class="sw sw-V"></i> Vacaciones</span>'+
+  '<span class="lg"><i class="sw sw-L"></i> Licencia/Médico</span></div>';
+
 // ── MI DIAGRAMA (empleado) — calendario mensual ────────────────────────
 var midCursor = null;
 function midPrevMonth(){
@@ -721,24 +794,8 @@ function renderMiDiagrama(){
   }
   var hoy = new Date();
   if(!midCursor) midCursor = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-  var year = midCursor.getFullYear(), month = midCursor.getMonth();
-  document.getElementById('mid-cal-title').textContent = MESES[month]+' '+year;
-
-  var firstOfMonth = new Date(year, month, 1);
-  var leading = firstOfMonth.getDay();
-  var daysInMonth = new Date(year, month+1, 0).getDate();
-  var cells = [];
-  for(var i=0;i<leading;i++) cells.push(null);
-  for(var d=1; d<=daysInMonth; d++) cells.push(new Date(year, month, d));
-  while(cells.length % 7 !== 0) cells.push(null);
-
-  wrap.innerHTML = cells.map(function(date){
-    if(!date) return '<div class="cal-cell cal-empty"></div>';
-    var iso = fmtISO(date);
-    var status = statusFor(STATE.integrante, iso, STATE.novedades);
-    var isToday = sameDay(date, hoy);
-    return '<div class="cal-cell daycell-'+status+(isToday?' today':'')+'" title="'+escapeHtml(statusLabel(status))+'">'+date.getDate()+'</div>';
-  }).join('');
+  document.getElementById('mid-cal-title').textContent = MESES[midCursor.getMonth()]+' '+midCursor.getFullYear();
+  wrap.innerHTML = buildCalendarCellsHtml(STATE.integrante, STATE.novedades, midCursor.getFullYear(), midCursor.getMonth());
 }
 function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 function renderMisNovedades(){

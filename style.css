@@ -88,6 +88,9 @@ main{padding:18px 20px;max-width:1500px;margin:0 auto}
 .toolbar{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-size:.72rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.04em}
+.field-hint{font-size:.68rem;color:var(--txt3)}
+.field select[multiple]{min-width:160px;padding:4px}
+.field select[multiple] option{padding:5px 6px;border-radius:4px}
 .field-row{display:flex;gap:10px}
 .field-row .field{flex:1}
 .empty{color:var(--txt3);padding:20px;text-align:center;font-size:.85rem}
@@ -145,7 +148,7 @@ tr.group-sep td{background:var(--bg2);color:var(--accent2);font-weight:700;font-
 .cal-nav{display:flex;align-items:center;gap:8px}
 .cal-nav-btn{background:var(--bg2);border:1px solid var(--border);color:var(--txt);border-radius:8px;width:34px;height:34px;font-size:1.1rem;line-height:1;display:flex;align-items:center;justify-content:center}
 .cal-nav-btn:hover{border-color:var(--accent2)}
-.cal-title{font-family:var(--font-display);font-weight:700;font-size:1rem;text-transform:capitalize;min-width:140px;text-align:center}
+.cal-title{font-family:var(--font-display);font-weight:700;font-size:1rem;text-transform:capitalize;flex:1;min-width:0;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px}
 .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
 .cal-dow{text-align:center;font-size:.68rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-mono)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}

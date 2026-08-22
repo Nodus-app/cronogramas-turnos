@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <script>(function(){try{var t=localStorage.getItem('crono-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head>
 <body>
@@ -93,13 +93,14 @@
         </div>
         <div class="field">
           <label>Integrante</label>
-          <select id="pan-integrante" onchange="renderPanorama()"><option value="">Todos</option></select>
+          <select id="pan-integrante" multiple size="5" onchange="renderPanorama()"></select>
+          <span class="field-hint">Shift+clic: rango · Ctrl/Cmd+clic: varios sueltos</span>
         </div>
-        <div class="field">
+        <div class="field" id="pan-desde-field">
           <label>Desde</label>
           <input type="date" id="pan-desde" onchange="renderPanorama()">
         </div>
-        <div class="field">
+        <div class="field" id="pan-dias-field">
           <label>Días a mostrar</label>
           <select id="pan-dias" onchange="renderPanorama()">
             <option value="14">14 días</option>
@@ -112,7 +113,7 @@
             <option value="365">365 días</option>
           </select>
         </div>
-        <button class="btn" onclick="setPanHoy()">Hoy</button>
+        <button class="btn" id="pan-hoy-btn" onclick="setPanHoy()">Hoy</button>
         <div class="legend">
           <span class="lg"><i class="sw sw-D"></i> Día</span>
           <span class="lg"><i class="sw sw-N"></i> Noche</span>
@@ -317,6 +318,6 @@
   </div>
 </div>
 
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
