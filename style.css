@@ -4,7 +4,7 @@
   --bg:#F3EEE2; --bg2:#E8DFC7; --card:#FFFFFF; --border:#DDD2B4;
   --txt:#2A2418; --txt2:#6B6252; --txt3:#948A76;
   --accent:#D9A62B; --accent2:#E8B94A; --accent-ink:#FFFFFF; --danger:#E23B3B; --warn:#F59E0B; --ok:#22B573;
-  --d-color:#EDA100; --n-color:#2A78D6; --f-color:#1BAF7A; --v-color:#4A3AA7; --l-color:#E34948;
+  --d-color:#D99A2E; --n-color:#2A78D6; --f-color:#3F8F63; --v-color:#4A3AA7; --l-color:#C43A1C;
   --font-display:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
   --font-mono:'JetBrains Mono',ui-monospace,monospace;
 }
@@ -99,11 +99,11 @@ table.matrix th.daycol.today{color:var(--accent)}
 table.matrix th.month-row{background:var(--bg2);color:var(--txt2);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0}
 table.matrix td.daycell{height:30px;cursor:default;position:relative}
 table.matrix td.daycell.today{box-shadow:inset 0 0 0 2px var(--accent)}
-.daycell-D{background:var(--d-color);color:#2A2418;font-weight:700}
+.daycell-D{background:var(--d-color);color:#1A1200;font-weight:700}
 .daycell-N{background:var(--n-color);color:#FFFFFF;font-weight:700}
-.daycell-F{background:var(--f-color);color:#0B3D24;font-weight:700}
+.daycell-F{background:var(--f-color);color:#FFFFFF;font-weight:700}
 .daycell-V{background:var(--v-color);color:#FFFFFF;font-weight:700}
-.daycell-L{background:var(--l-color);color:#1A0000;font-weight:700}
+.daycell-L{background:var(--l-color);color:#FFFFFF;font-weight:700}
 tr.group-sep td{background:var(--bg2);color:var(--accent2);font-weight:700;font-size:.75rem;padding:6px 10px;text-align:left}
 
 .daycell-tooltip{position:fixed;background:var(--card);color:var(--txt);border:1px solid var(--accent2);border-radius:6px;padding:6px 10px;font-size:.75rem;z-index:50;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.18)}
