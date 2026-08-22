@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 <script>(function(){try{var t=localStorage.getItem('crono-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 </head>
 <body>
@@ -200,8 +200,20 @@
     <section id="sec-midiagrama" class="sec">
       <div class="card">
         <div class="card-h"><h2 id="mid-titulo">Mi diagrama</h2></div>
-        <div id="mid-wrap" class="matrix-wrap"></div>
-        <div class="legend" style="margin-top:12px">
+        <div class="cal-header">
+          <button class="cal-nav-btn" onclick="midPrevMonth()" aria-label="Mes anterior">‹</button>
+          <div id="mid-cal-title" class="cal-title"></div>
+          <div class="cal-nav">
+            <button class="btn-ghost btn-sm" onclick="midHoy()">Hoy</button>
+            <button class="cal-nav-btn" onclick="midNextMonth()" aria-label="Mes siguiente">›</button>
+          </div>
+        </div>
+        <div class="cal-dow-row">
+          <div class="cal-dow">Dom</div><div class="cal-dow">Lun</div><div class="cal-dow">Mar</div>
+          <div class="cal-dow">Mié</div><div class="cal-dow">Jue</div><div class="cal-dow">Vie</div><div class="cal-dow">Sáb</div>
+        </div>
+        <div id="mid-wrap" class="cal-grid"></div>
+        <div class="legend" style="margin-top:14px">
           <span class="lg"><i class="sw sw-D"></i> Día</span>
           <span class="lg"><i class="sw sw-N"></i> Noche</span>
           <span class="lg"><i class="sw sw-F"></i> Franco</span>
@@ -303,6 +315,6 @@
   </div>
 </div>
 
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

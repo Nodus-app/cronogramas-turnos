@@ -693,20 +693,54 @@ function mostrarCobertura(persona, desde, hasta){
     }).join('');
 }
 
-// ── MI DIAGRAMA (empleado) ─────────────────────────────────────────────
+// ── MI DIAGRAMA (empleado) — calendario mensual ────────────────────────
+var midCursor = null;
+function midPrevMonth(){
+  if(!midCursor) return;
+  midCursor = new Date(midCursor.getFullYear(), midCursor.getMonth()-1, 1);
+  renderMiDiagrama();
+}
+function midNextMonth(){
+  if(!midCursor) return;
+  midCursor = new Date(midCursor.getFullYear(), midCursor.getMonth()+1, 1);
+  renderMiDiagrama();
+}
+function midHoy(){
+  var hoy = new Date();
+  midCursor = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  renderMiDiagrama();
+}
 function renderMiDiagrama(){
   if(!STATE || STATE.rol!=='empleado') return;
   var wrap = document.getElementById('mid-wrap');
   document.getElementById('mid-titulo').textContent = 'Mi diagrama — '+(STATE.nombre||'');
   if(!STATE.integrante){
     wrap.innerHTML = '<div class="empty">No se encontró tu diagrama. Avisale a tu supervisor.</div>';
+    document.getElementById('mid-cal-title').textContent = '';
     return;
   }
-  var desde = addDays(new Date(),-7);
-  var fechas = []; for(var k=0;k<45;k++) fechas.push(addDays(desde,k));
-  var filas = [{integrante:STATE.integrante, label:STATE.integrante.nombre}];
-  wrap.innerHTML = buildMatrixHtml(filas, fechas, STATE.novedades);
+  var hoy = new Date();
+  if(!midCursor) midCursor = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  var year = midCursor.getFullYear(), month = midCursor.getMonth();
+  document.getElementById('mid-cal-title').textContent = MESES[month]+' '+year;
+
+  var firstOfMonth = new Date(year, month, 1);
+  var leading = firstOfMonth.getDay();
+  var daysInMonth = new Date(year, month+1, 0).getDate();
+  var cells = [];
+  for(var i=0;i<leading;i++) cells.push(null);
+  for(var d=1; d<=daysInMonth; d++) cells.push(new Date(year, month, d));
+  while(cells.length % 7 !== 0) cells.push(null);
+
+  wrap.innerHTML = cells.map(function(date){
+    if(!date) return '<div class="cal-cell cal-empty"></div>';
+    var iso = fmtISO(date);
+    var status = statusFor(STATE.integrante, iso, STATE.novedades);
+    var isToday = sameDay(date, hoy);
+    return '<div class="cal-cell daycell-'+status+(isToday?' today':'')+'" title="'+escapeHtml(statusLabel(status))+'">'+date.getDate()+'</div>';
+  }).join('');
 }
+function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 function renderMisNovedades(){
   if(!STATE || STATE.rol!=='empleado') return;
   var tbody = document.getElementById('mid-novedades-tbody');
